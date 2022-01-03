@@ -1,0 +1,124 @@
+###############################################
+# Program: Area of a square circle and rectangle
+# Programmer: Christopher Steeves
+# Date: 21 Feb 19
+###############################################
+
+
+
+
+
+
+    .data
+    prompt:    	.asciiz "Enter 1 For circle, 2 For Square, 3 For rectangle, 0 to exit: " #prompt for choosing area shapes
+    point:     	.asciiz "Enter value for x1 y1 x2 y2"
+    cirarea:   	.asciiz "Area of circle is: "
+    sqarea:   	.asciiz "Area of square is: "
+    recarea:   	.asciiz "Area of rectangle is: "
+    .text
+    .globl main
+main:
+
+
+loop:     #loop for user choice
+    li $v0, 4
+    la $a0, prompt     #prints prompt
+    syscall
+    li $v0, 5
+    syscall     #ask user input
+    move $t1, $v0     #store user input in t1
+    #loops 
+    beqz $t1, exit   	 #branch if user input 0 exit program
+    beq $t1, 1, circle    #branch if user input is equal to a 1, goes to circle area
+    beq $t1, 2, square    #branch if user input is equal to a 2, goes to square area
+    beq $t1, 3, rectangle    #branch if user input is equal to a 3, goes to rectangle area
+    j loop 
+#1
+circle:
+    li $v0, 4
+    la $a0, point     #user inputs label for x and y points 
+    syscall
+    li $v0,5
+    syscall     #ask user input
+    move $t1, $v0     #store input in t1
+    li $v0, 5
+    syscall     #ask user input
+    move $t2, $v0     #store input in t2
+    li $v0,5
+    syscall     #ask user input
+    move $t3, $v0     #store input in t3
+    li $v0, 5
+    syscall     #ask user input
+    move $t4, $v0     #store input in t4
+    sub $s0, $t1, $t3 #subtracts x2-x1
+    sub $s1, $t2, $t4 #subtracts y2-y1
+    mul $s0, $s0, $s0 #squares value by multiplying itself from s0 
+    mul $s1, $s1, $s1 #squares value by multiplying itself from s1
+    add $s2, $s0, $s1 #add values in s0 and s1 and 
+    mul $s2, $s2, 314156 #mul by PI
+    div $s2, $s2, 100000 #divide by 100000
+    li $v0, 4
+    la $a0, cirarea #prints circle label
+    syscall
+    li $v0, 1
+    move $a0, $s2
+    syscall
+
+#2
+square:
+    li $v0, 4
+    la $a0, point     #it will print prompt
+    syscall
+    li $v0, 5
+    syscall    	 #ask user input
+    move $t1, $v0    	 #store user input t1
+    li $v0, 5
+    syscall    	 #ask user input
+    move $t2, $v0    	 #store user input t2
+    li $v0,5
+    syscall    	 #ask user input
+    move $t3, $v0    	 #store user input t3
+    li $v0, 5
+    syscall    	 #ask user input
+    move $t4, $v0    	 #store user input t4
+    sub $s0, $t1, $t3     #subtracts values from t1 and t3 stores in s0
+    sub $s1, $t2, $t4     #subtracts values from t2 and t4 stores in s1
+    mul $s0, $s0, $s0     #multiply s0 by s0
+    mul $s1, $s1, $s1     #multiply s1 by s1
+    add $s2, $s0, $s1     #add values in s0 and s1 stores in s2
+	 li $v0, 4
+    la $a0, sqarea    	 #prints square label
+    syscall
+    li $v0, 1
+    move $a0, $s2
+    syscall
+#3
+rectangle:
+    li $v0, 4
+    la $a0, point    	 #it will print prompt
+    syscall   	 
+    li $v0, 5
+    syscall    	 #ask user input
+    move $t1, $v0    	 #store user input in t1
+    li $v0, 5
+    syscall    	 #ask user input
+    move $t2, $v0   	 #store user input in t2
+    li $v0, 5
+    syscall    	 #ask user input
+    move $t3, $v0    	 #store user input in t3
+    li $v0, 5
+    syscall    	 #ask user input
+    move $t4, $v0    	 #store user input in t4
+    sub $s0, $t1, $t3     #subtracts values in t3 and t1 stores in s0
+    sub $s1, $t2, $t4     #subtracts values in t4 and t2 stores in s1
+    mul $s2, $s0, $s1     #multiplies values in s1 and s0 stores in s2
+    li $v0, 4
+    la $a0, recarea   	 #it will print prompt
+    syscall
+    li $v0, 1
+    move $a0, $s2
+    syscall
+    
+    # END OF PROGRAM
+    li $v0, 10
+    syscall
