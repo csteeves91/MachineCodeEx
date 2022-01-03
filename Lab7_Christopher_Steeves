@@ -1,0 +1,78 @@
+#############################################
+# Program Name: Lab 7 Dynamic Memory allocation and strings
+# Programmer: Christopher Steeves
+# Date 20 May 2021
+##############################################
+# Functional Description:
+# Dynamically allocates memory for two strings and replaces input text which has a max
+# of 39 characters with a compressed version of the input text.
+##############################################
+.data
+	buffer: .space 40
+Complete: .asciiz "\nWould you like to apply run length encoding again?"
+Answer: .asciiz "Compressed String is: "
+EnterCharacter: .asciiz "Please enter up to 39 Characters\n"
+.text
+main:
+# Entry of string into memory
+la $a0, EnterCharacter
+li $v0, 4
+syscall
+#String is placed into buffer
+la $a0, buffer
+li $a1, 40
+li $v0, 8
+syscall
+la $a0, buffer
+move $s1, $v0
+copy:
+lb $t0,($s0)        # Read one byte from the source address
+sb $t0,($s1)        # Store it at the destination address
+addiu $s0,$s0,1
+addiu $s1,$s1,1
+bne $t0,$zero,copy  # Repeat until the NUL terminator has been copied)
+lb $t1, ($s1)
+sb $t1, ($s2)
+lb $t0, ($s1)
+sb $t0, ($s3) #Stores first Letter into the first byte space of s3
+loop1: #compares s1 and s2
+beq $t0,$zero,Print
+addiu $s2,$s2,1
+beq $s1,$s2,loop2
+addiu $s3,$s3,1
+blt $zero, $t2, AddNumber
+Continue: #adds letter to output string
+lb $t0, ($s2)
+sb $t0, ($s3)
+addiu $s3,$s3, 1
+j loop1
+AddNumber:
+lb $t0, ($t2)
+sb $t0, ($s3)
+j Continue
+loop2: #keeps count of repetitions
+beq $t4,$t5,reset
+addi $t2,$t2,1
+addiu $s1,$s1,1
+b loop1
+reset: #resets t4 so loop2 can continue
+seq $t4, $t4, 50000
+j loop2
+
+Print:
+la $a0, Answer
+li $v0, 4
+syscall
+la $a0, ($s3)
+li $v0, 4
+syscall
+la $a0, Complete
+li $v0, 4
+syscall
+li $v0, 5
+syscall
+beq $v0, $zero, end
+j main
+end:
+li $v0, 10
+syscall

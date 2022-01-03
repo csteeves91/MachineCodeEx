@@ -1,0 +1,111 @@
+#############################################
+# Program Name: Double Floating point operations and functions
+# Programmer: Christopher Steeves
+# Date 20 May 2021
+##############################################
+# Functional Description:
+# Computes the Area of a Sphere and a Cube using functions that 
+#computes differences in points, distance between those points, area of sphere and 
+#area of a cube.
+##############################################
+.data #Data section
+X1: .asciiz "Enter x value of point1: "
+X2: .asciiz "Enter x value of point2: "
+Y1: .asciiz "Enter y value of point1: "
+Y2: .asciiz "Enter y value of point2: "
+Pi: .double 3.14
+Four: .double 4
+Six: .double 6
+Sphere: .asciiz "Surface area of sphere = "
+Cube: .asciiz "\nSurface area of cube = "
+.text
+#X1
+la $a0,X1
+li $v0,4
+syscall
+#Read X1
+li $v0,7
+syscall
+#Store in f2
+mov.d $f2,$f0
+#Y1
+la $a0,Y1
+li $v0,4
+syscall
+#Read Y1
+li $v0,7
+syscall
+#Store Y1 into f4
+mov.d $f4,$f0
+#X2
+la $a0,X2
+li $v0,4
+syscall
+#Read X2
+li $v0,7
+syscall
+#Store X2 into f6
+mov.d $f6,$f0
+#Y2
+la $a0,Y2
+li $v0,4
+syscall
+#Read Y2
+li $v0,7
+syscall
+#Store Y2 into f8
+mov.d $f8,$f0
+#Calls the function to calculate surface area of a sphere
+jal SphereArea
+#Display surface area
+la $a0,Sphere
+li $v0,4
+syscall
+li $v0,3
+syscall
+#Call function to calculate surface area of cube
+jal cubeArea
+#Display surface area of a cube
+la $a0,Cube
+li $v0,4
+syscall
+li $v0,3
+syscall
+#Exit:
+li $v0,10
+syscall
+#Implementation of sphere surface area
+SphereArea:
+addi $sp,$sp,8 #Allocate stack space
+sw $ra,0($sp) #Store return address
+jal SubtractXY #Call function
+jal GetDistance #Call function
+l.d $f10,Pi #Get Pi value
+mul.d $f12,$f12,$f10 #Multiplies r^2 by Pi
+l.d $f10,Four #Get four
+mul.d $f12,$f12,$f10 #4*Pi*r^2
+lw $ra,0($sp) #Return address
+addi $sp,$sp,-8 #Deallocates stack
+jr $ra #Return to main
+#Implements cube surface area
+cubeArea:
+addi $sp,$sp,8 #Allocates 4 bytes of stack space
+sw $ra,0($sp) #Store return address of stack
+jal SubtractXY #Call function
+jal GetDistance #Call function
+l.d $f10,Six #Get 6
+mul.d $f12,$f12,$f10 #6*a^2
+lw $ra,0($sp) #Return address
+addi $sp,$sp,-4 #Deallocate stack
+jr $ra #Return to main
+#Distance between X and Y
+SubtractXY:
+sub.d $f12,$f6,$f2 #X2-X1
+sub.d $f14,$f8,$f4 #Y2-Y1
+jr $ra
+#Implementation of distance
+GetDistance:
+mul.d $f12,$f12,$f12 #(X2-X1)^2
+mul.d $f14,$f14,$f14 #(Y2-Y1)^2
+add.d $f12,$f12,$f14 #(X2-X1)^2+(Y2-Y1)^2
+jr $ra
