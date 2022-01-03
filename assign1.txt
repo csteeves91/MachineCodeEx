@@ -1,0 +1,76 @@
+###########################################
+# Program Name: Palindrom Program
+# Programmer: Christopher Steeves
+# 20 Feb 2019
+############################################
+#Functional Description:
+# A program to find the first palindrome that occurs when adding a number to its reverse
+# read in from the keyboard
+#############################################
+# Register usage
+# $a0 - input
+# $a1 - current character
+# $a2 - length of string
+# $t1 - beginning of string char
+# $t2 - end of string char
+# $v0 - syscall number / function return value
+####################################################
+
+	.data 	# Data declaration section
+Prompt: .asciiz "\n Please input a number"
+Result: .asciiz "The number is a palindrome "
+Bye:	.asciiz "\ *********Have a good day**********"
+	.global main
+	.text
+
+main:		# Start of code Section
+	li	$v0, 4			# System call code for Print String
+	la	$a0, Prompt		#load address of prompt into $a0
+	syscall				#print prompt message
+	jal	ReadInt
+	blez	$v0, End		#branch to end if $v0 <=0
+	li	$t0, 0			#clear t0 to 0
+
+ispalindrome:
+	add	$a2, $0, 0		#length counter
+
+Find_Length:	
+	lbu	$a1, 0($a0)		#load char into $a1
+	beq	$a1, $0, Pal_Check	#Break if string is at the end
+	addi	$a2, $a2, 1 		#increment counter
+	addi	$a0, $a0, 1		#increment string address
+	j	Find_Length
+
+Pal_Check: 
+    	# Is palindrome if length is less than 2
+	slti	$t0, $a2, 2
+	bne	$t0, $0, Return_True
+  
+	#Check first and last chars to see if they are the same
+	lbu	$t0, 0($a0)		#first char is t0
+	add	$t1, $a2, $a0		#last char is t1
+	lbu	$t1, 0($t1)
+	bne	$t0, $t1, Return_False	#if they are not equal, return false
+	
+	# continuing iteration
+	addi	$a2, $a2, -2
+	addi	$a0, $a0, 1
+	j	Pal_Check
+
+ReadInt:
+	li	$v0, 5		#system call code for Read Integer
+	syscall			#reads the value of N into $v0
+	jr	$ra
+
+Return_False:
+	addi	$v0, $0, 0
+	jr	$ra
+
+Return_True:
+	li	$v0, 4		#System call code for print string
+	la	$a0, Result	#load address of Result
+	syscall			#Print the string
+	li	$v0, 10		#return control to the system
+	syscall
+# End of Program
+########## End of main function ######### 
